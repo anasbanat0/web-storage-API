@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML5</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="icon" href="favicons/favicon.ico" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;800&display=swap" rel="stylesheet" />
+  <style media="screen">
+  body, input {
+              font-family: 'Raleway', sans-serif;
+          }
+
+          .flex {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+
+          body {
+              min-height: 100vh;
+              background-size: cover;
+              background-position: center;
+              margin: 0;
+          }
+
+          section {
+              padding-bottom: 16vh;
+              flex-grow: 1;
+              width: 100%;
+          }
+
+          h1 {
+              font-size: 56px;
+          }
+
+          h2 {
+              margin: 32px 0 6px;
+          }
+
+          input {
+              display: block;
+              margin: 0 auto;
+          }
+
+          input[type="url"] {
+              color: inherit;
+              font-size: 18px;
+              width: 400px;
+              background-color: transparent;
+              outline: none;
+              border: none;
+              border-bottom: 1px solid;
+              text-align: center;
+              margin-top: 10px;
+
+          }
+
+          ::placeholder {
+              color: inherit;
+          }
+
+
+  </style>
+</head>
+
+<body class="flex" onload="onLoad();">
+
+  <section id="section" class="flex">
+            <h1>Web Storage API Challenge</h1>
+
+            <h2>Choose Background Image</h2>
+            <input id="url" type="url" name="image" placeholder="URL" oninput="setBackground();">
+
+            <h2>Set Overlay Color</h2>
+            <input id="bg-color" type="color" name="bg-color" value="#ffffff" oninput="setOverlayColor();">
+
+            <h2>Set Overlay Transparency</h2>
+            <input id="opacity" type="range" step=".01" min="0" max="1" oninput="setOverlayColor();">
+
+            <h2>Set Text Color</h2>
+            <input id="text-color" type="color" name="text-color" oninput="setTextColor();">
+        </section>
+
+  <script type="text/javascript">
+
+          var localStorage = ('localStorage' in window);
+
+          function saveData(key, value) {
+              if(localStorage) {
+                  localStorage.setItem(key, value);
+              } else {
+                  alert('Browser does not support the localStorage API');
+              }
+          }
+
+          function loadData(key) {
+              if(localStorage) {
+                  if(key in localStorage){
+                      return localStorage.getItem(key);
+                  }
+              } else {
+                  alert('Browser does not support the localStorage API');
+              }
+          }
+
+          function setBackground() {
+              let file = document.getElementById("url").value;
+              saveData("imageURL", file);
+              document.body.style.backgroundImage = "url(" + file + ")";
+          }
+
+          function setOverlayColor() {
+              let color = document.getElementById("bg-color").value;
+              let RGBIfy = hexToRgb(color);
+              let opacity = document.getElementById("opacity").value;
+              let fullColor = `rgba(${RGBIfy.r}, ${RGBIfy.g}, ${RGBIfy.b}, ${opacity})`;
+
+              saveData("bg-color", color);
+              saveData("opacity", opacity);
+
+              document.getElementById("section").style.backgroundColor = fullColor;
+          }
+
+          function setTextColor() {
+              let color = document.getElementById("text-color").value;
+              saveData("text-color", color);
+              document.body.style.color = color;
+          }
+
+
+          function onLoad() {
+              // deleteAll();
+
+              // If the data exists, update the inputs to reflect the data stored.
+              loadData("imageURL") && (document.getElementById("url").value = loadData("imageURL"));
+              loadData("bg-color") && (document.getElementById("bg-color").value = loadData("bg-color"));
+              loadData("opacity") && (document.getElementById("opacity").value = loadData("opacity"));
+              loadData("text-color") && (document.getElementById("text-color").value = loadData("text-color"));
+              setBackground();
+              setOverlayColor();
+              setTextColor();
+          }
+
+          function deleteAll() {
+              localStorage.clear();
+          }
+
+
+          function hexToRgb(hex) {
+              var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+              return result ? {
+                  r: parseInt(result[1], 16),
+                  g: parseInt(result[2], 16),
+                  b: parseInt(result[3], 16)
+              } : null;
+          }
+
+  </script>
+</body>
+
+</html>
